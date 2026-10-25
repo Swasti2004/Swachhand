@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{Empirical evaluation across 30 independent random seeds (100 rounds/seed). Mean $\pm$ 95\% CI.}
+\label{tab:evaluation_results}
+\begin{tabular}{llccc}
+\hline
+\textbf{Environment} & \textbf{Algorithm} & \textbf{Cumulative Reward} & \textbf{Cumulative Regret} & \textbf{Burnout Events} \\
+\hline
+\multirow{3}{*}{Standard} & Random & 27.77 $\pm$ 0.70 & 39.42 $\pm$ 0.85 & 0.00 $\pm$ 0.00 \\
+ & Heuristic & 36.06 $\pm$ 0.59 & 31.14 $\pm$ 0.72 & 0.00 $\pm$ 0.00 \\
+ & LinUCB (Ours) & 37.28 $\pm$ 0.77 & 29.91 $\pm$ 0.79 & 0.00 $\pm$ 0.00 \\
+\hline
+\multirow{3}{*}{Fatigue Free} & Random & 31.13 $\pm$ 0.53 & 36.07 $\pm$ 0.68 & 0.00 $\pm$ 0.00 \\
+ & Heuristic & 36.06 $\pm$ 0.59 & 31.14 $\pm$ 0.72 & 0.00 $\pm$ 0.00 \\
+ & LinUCB (Ours) & 37.30 $\pm$ 0.77 & 29.91 $\pm$ 0.79 & 0.00 $\pm$ 0.00 \\
+\hline
+\multirow{3}{*}{Preference Drift} & Random & 27.79 $\pm$ 0.80 & 39.38 $\pm$ 1.00 & 0.00 $\pm$ 0.00 \\
+ & Heuristic & 36.00 $\pm$ 0.57 & 31.19 $\pm$ 0.55 & 0.00 $\pm$ 0.00 \\
+ & LinUCB (Ours) & 31.81 $\pm$ 0.69 & 35.36 $\pm$ 0.78 & 0.33 $\pm$ 0.42 \\
+\hline
+\end{tabular}
+\end{table*}

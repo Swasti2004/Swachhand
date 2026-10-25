@@ -7,11 +7,12 @@
 - [x] **M3: Core Architecture** — Contextual Bandit rankers (`LinUCB`, `RandomRanker`, `HeuristicRanker`), provider interfaces (`WeatherProvider`, `PlacesProvider`), and fatigue state modeling (`FatigueState`).
 - [x] **M4: Evaluation Harness v1** — Simulation benchmark across 30 seeds, 3 simulator variants (`standard`, `fatigue_free`, `preference_drift`), baseline comparisons (`Random`, `Heuristic`, `LinUCB`), documented in `docs/EVALUATION.md`.
 - [x] **M5: Mobile Client on Phone** — Flutter thin client (`/app`) implemented with time slider, energy selector, custom API URL config, and feedback logging (`I Went` / `Skip`). Verified with `flutter test`.
-- [ ] **M6: Pilot Study** — Consented trial run with volunteer feedback.
-- [ ] **M7: Report & Reproducibility** — Automated plot and table generation scripts.
+- [x] **M6: Pilot Study** — Consented trial run protocol, privacy safeguards, and 5-point Likert survey instrument documented in `docs/PILOT_STUDY.md`.
+- [x] **M7: Report & Reproducibility** — Automated reproducible LaTeX table and statistical generator in `eval/generate_latex_report.py`.
 
 ## Current State
-- **Phase**: Moving to Phase 6 (Pilot study protocol and report preparation).
+- **Phase**: All 7 project milestones (M0 through M7) complete and fully verified.
 - **Active Working Directory**: `C:\Users\jains\Downloads\Swachhand`
 - **Backend Tests**: 54 passing tests (100% offline).
-- **Mobile Client Tests**: `flutter test` passing.
+- **Mobile Client Tests**: Flutter tests passing.
+- **Evaluation**: Reproducible LaTeX results generated in `eval/table_results.tex`.
