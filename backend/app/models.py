@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 Energy = Literal["low", "medium", "high"]
 Effort = Literal["easy", "moderate", "active"]
-Engine = Literal["llm", "fallback", "none"]
+Engine = Literal["llm", "bandit", "heuristic", "fallback", "none"]
 FeedbackAction = Literal["accepted", "skipped", "done"]
 
 

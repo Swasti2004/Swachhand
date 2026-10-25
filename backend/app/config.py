@@ -36,8 +36,11 @@ class Settings:
     search_radius_m: int = 3000
     coord_decimals: int = 3  # 3 decimals is roughly 110 m of precision
     allow_after_dark: bool = False
+    # Ranking algorithm: 'llm' (default baseline), 'bandit' (LinUCB with fatigue), or 'heuristic'
+    ranker_algorithm: str = "llm"
+    bandit_alpha: float = 0.3
 
-    user_agent: str = "touch-grass-planner/0.1 (open-source hackathon project)"
+    user_agent: str = "Swachhand/1.0 (academic open-source project)"
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -53,4 +56,6 @@ class Settings:
             search_radius_m=int(os.getenv("TG_SEARCH_RADIUS_M", d.search_radius_m)),
             coord_decimals=int(os.getenv("TG_COORD_DECIMALS", d.coord_decimals)),
             allow_after_dark=_env_bool("TG_ALLOW_AFTER_DARK", d.allow_after_dark),
+            ranker_algorithm=os.getenv("SWACHHAND_RANKER", d.ranker_algorithm).lower(),
+            bandit_alpha=float(os.getenv("SWACHHAND_BANDIT_ALPHA", str(d.bandit_alpha))),
         )

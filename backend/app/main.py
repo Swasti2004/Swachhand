@@ -13,6 +13,7 @@ from . import __version__
 from .cache import SimpleTTLCache
 from .config import Settings
 from .models import FeedbackIn, SuggestRequest, SuggestResponse
+from .ranking import LinUCBRanker
 from .service import ServiceError, suggest
 from .store import Store
 
@@ -31,6 +32,7 @@ def create_app(
         app.state.store = Store(cfg.db_path)
         app.state.weather_cache = SimpleTTLCache(ttl_seconds=600.0)
         app.state.places_cache = SimpleTTLCache(ttl_seconds=600.0)
+        app.state.bandit = LinUCBRanker(alpha=cfg.bandit_alpha)
         async with httpx.AsyncClient(
             headers={"User-Agent": cfg.user_agent}, timeout=25.0, transport=transport
         ) as client:
@@ -66,6 +68,7 @@ def create_app(
                 req,
                 weather_cache=getattr(request.app.state, "weather_cache", None),
                 places_cache=getattr(request.app.state, "places_cache", None),
+                bandit=getattr(request.app.state, "bandit", None),
             )
         except ServiceError as exc:
             raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc

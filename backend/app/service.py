@@ -9,12 +9,14 @@ import httpx
 from .cache import SimpleTTLCache
 from .config import Settings
 from .fallback import rank_fallback
+from .fatigue import FatigueState
 from .filters import filter_places, stay_minutes
 from .geo import coarsen, geocode
 from .llm import LLMError, ask_model, parse_picks
 from .models import Pick, Place, SuggestionOut, SuggestRequest, SuggestResponse
 from .places import fetch_places
 from .prompt import SYSTEM_PROMPT, build_user_prompt
+from .ranking import HeuristicRanker, LinUCBRanker
 from .store import Store
 from .weather import fetch_weather
 
@@ -65,6 +67,7 @@ async def suggest(
     req: SuggestRequest,
     weather_cache: SimpleTTLCache | None = None,
     places_cache: SimpleTTLCache | None = None,
+    bandit: LinUCBRanker | None = None,
 ) -> SuggestResponse:
     w_cache = weather_cache
     p_cache = places_cache
@@ -121,24 +124,40 @@ async def suggest(
         )
 
     history = store.history()
+    fatigue = FatigueState.from_history(history.recent_load_minutes)
     by_id = {p.id: p for p in result.candidates}
     allowed = {p.id: stay_minutes(p, req.minutes) for p in result.candidates}
     notes: list[str] = []
-    engine = "llm"
-    model: str | None = settings.ollama_model
 
-    try:
-        prompt = build_user_prompt(
-            req.minutes, req.energy, req.interests, weather, result.candidates, history
+    # Select ranking engine based on settings (bandit, llm, or heuristic)
+    if settings.ranker_algorithm == "bandit" and bandit is not None:
+        picks = bandit.rank(
+            result.candidates, req.minutes, req.energy, req.interests, history, weather, fatigue
         )
-        raw = await ask_model(client, settings, SYSTEM_PROMPT, prompt)
-        picks = parse_picks(raw, allowed)
-    except LLMError as exc:
-        notes.append(f"{exc} Showing a simple rule-based ranking instead.")
-        picks = rank_fallback(
-            result.candidates, req.minutes, req.energy, req.interests, history, weather
+        engine = "bandit"
+        model = "linucb"
+    elif settings.ranker_algorithm == "llm":
+        try:
+            prompt = build_user_prompt(
+                req.minutes, req.energy, req.interests, weather, result.candidates, history
+            )
+            raw = await ask_model(client, settings, SYSTEM_PROMPT, prompt)
+            picks = parse_picks(raw, allowed)
+            engine = "llm"
+            model = settings.ollama_model
+        except LLMError as exc:
+            notes.append(f"{exc} Showing a simple rule-based ranking instead.")
+            picks = rank_fallback(
+                result.candidates, req.minutes, req.energy, req.interests, history, weather
+            )
+            engine = "fallback"
+            model = None
+    else:
+        ranker = HeuristicRanker()
+        picks = ranker.rank(
+            result.candidates, req.minutes, req.energy, req.interests, history, weather, fatigue
         )
-        engine = "fallback"
+        engine = "heuristic"
         model = None
 
     return SuggestResponse(
