@@ -31,12 +31,13 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: 'temurin'
+          java-version: '21'
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Install dependencies
         run: |
           cd app
@@ -44,9 +45,9 @@ jobs:
       - name: Build APK
         run: |
           cd app
-          flutter build apk --release
+          flutter build apk --release --no-tree-shake-icons
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: swachhand-release-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk
+          path: app/build/app/outputs/flutter-apk/*.apk
