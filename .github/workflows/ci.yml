@@ -45,36 +45,20 @@ jobs:
           cd app
           flutter pub get
       - name: Build APK
-        id: build_step
         run: |
           cd app
           flutter build apk --release --no-tree-shake-icons
       - name: Collect APK
-        if: always()
         run: |
           mkdir -p release-apk
-          find . -name "*.apk" -exec cp -v {} release-apk/ \; || true
-          ls -la release-apk/ || true
-      - name: Publish Diagnostics to Summary
-        if: always()
-        run: |
-          echo "## Build Diagnostics" >> $GITHUB_STEP_SUMMARY
-          echo "- **Outcome**: ${{ steps.build_step.outcome }}" >> $GITHUB_STEP_SUMMARY
-          echo "### Discovered APK files" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          find . -name "*.apk" -ls >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.build_step.outcome }}" != "success" ]; then
-            echo "### Detailed Gradle Stacktrace" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            (cd app/android && ./gradlew assembleRelease --stacktrace) >> $GITHUB_STEP_SUMMARY 2>&1 || true
-            echo '```' >> $GITHUB_STEP_SUMMARY
-          fi
+          find . -name "*.apk" -exec cp -v {} release-apk/ \;
+          ls -lh release-apk/
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: swachhand-release-apk
           path: release-apk/*.apk
           if-no-files-found: error
+
 
 
