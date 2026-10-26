@@ -45,9 +45,9 @@ jobs:
       - name: Build APK
         run: |
           cd app
-          flutter build apk --release -v --no-tree-shake-icons
+          flutter build apk --debug
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: swachhand-release-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk
+          name: swachhand-apk
+          path: app/build/app/outputs/flutter-apk/*.apk
