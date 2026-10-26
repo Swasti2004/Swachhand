@@ -47,7 +47,11 @@ jobs:
       - name: Build APK
         run: |
           cd app
-          flutter build apk --release --no-tree-shake-icons
+          flutter build apk --release --no-tree-shake-icons --verbose 2>&1 | tee ../flutter_build.log
+      - name: Print build log on failure
+        if: failure()
+        run: |
+          tail -n 200 flutter_build.log
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
